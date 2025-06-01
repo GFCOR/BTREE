@@ -1,6 +1,8 @@
 #ifndef BTree_H
 #define BTree_H
 #include <iostream>
+#include <vector>
+
 #include "node.h"
 
 using namespace std;
