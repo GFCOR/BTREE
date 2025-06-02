@@ -21,6 +21,11 @@ struct Node {
     count = 0;
     leaf = true;
   }
+  void insert(TK key) {
+    keys[count] = key;
+    count++;
+    sort(keys.begin(), keys.end());
+  }
 
   void killSelf() {
     // TODO
