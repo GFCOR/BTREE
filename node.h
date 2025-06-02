@@ -24,11 +24,17 @@ struct Node {
   void insert(TK key) {
     keys[count] = key;
     count++;
-    sort(keys.begin(), keys.end());
+    sort(keys, keys + count);
+
   }
 
   void killSelf() {
-    // TODO
+    for (int i = 0; i <= count; i++) {
+      if (!leaf && children[i]) {
+        children[i]->killSelf();
+      }
+    }
+    delete[] children;
   }
 };
 

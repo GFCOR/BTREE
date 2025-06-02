@@ -122,7 +122,10 @@ class BTree {
       return curr->keys[curr->count -1];
   }
       // maximo valor de la llave en el arbol
-  void clear(); // eliminar todos lo elementos del arbol
+  void clear() {
+      root->killSelf();
+  }
+      // eliminar todos lo elementos del arbol
   int size(); // retorna el total de elementos insertados
   static BTree<int>* build_from_ordered_vector(const vector<int>& vector, int i);
 
