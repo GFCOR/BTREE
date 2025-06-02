@@ -94,12 +94,34 @@ class BTree {
     }
 }
   void remove(TK key);//elimina un elemento
-  int height();//altura del arbol. Considerar altura 0 para arbol vacio
+  int height() {
+      Node<TK>* curr = root;
+      int ans = 1;
+      while (!curr->leaf) {
+          curr = curr->children[0];
+          ans++;
+      }
+      return ans;
+  }
+      //altura del arbol. Considerar altura 0 para arbol vacio
   string toString(const string& sep);  // recorrido inorder
   vector<TK> rangeSearch(TK begin, TK end);
 
-  TK minKey();  // minimo valor de la llave en el arbol
-  TK maxKey();  // maximo valor de la llave en el arbol
+  TK minKey() {
+      Node<TK>* curr = root;
+      while (!curr->leaf) {
+          curr = curr->children[0];
+      }
+      return curr->keys[0];
+  }// minimo valor de la llave en el arbol
+  TK maxKey() {
+      Node<TK>* curr = root;
+      while (!curr->leaf) {
+          curr = curr->children[curr->count];
+      }
+      return curr->keys[curr->count -1];
+  }
+      // maximo valor de la llave en el arbol
   void clear(); // eliminar todos lo elementos del arbol
   int size(); // retorna el total de elementos insertados
   static BTree<int>* build_from_ordered_vector(const vector<int>& vector, int i);
