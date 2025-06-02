@@ -36,43 +36,63 @@ class BTree {
    return false;
   }//indica si se encuentra o no un elemento//indica si se encuentra o no un elemento
   void insert(TK key) {
-   stack<Node<TK>*> s;
-   bool inserted = false;
-   Node<TK>* curr = root;
-   s.push(curr);
-   while (!curr->leaf) {
-    int i;
-    for (int i = 0; i < curr->count; i++) {
-     if (curr->keys[i] > key) {
-      break;
-     }
-    }
-    curr = curr->children[i];
+    stack<Node<TK>*> s;
+    bool inserted = false;
+    Node<TK>* curr = root;
     s.push(curr);
-   }
-   while (!inserted) {
-    curr->insert(key);
-    if (curr->count < M) {
-     inserted = true;
+    while (!curr->leaf) {
+        int i;
+        for (i = 0; i < curr->count; i++) {
+            if (curr->keys[i] > key) break;
+        }
+        curr = curr->children[i];
+        s.push(curr);
     }
-    else {
-     Node<TK>* newNode = new Node<TK>(M);
-     for (int i = 0; i < curr->count/2; i++) {
-      newNode->keys[i] = curr->keys[i];
-      newNode->count = newNode->count + 1;
-     }
-     Node<TK>* parent = new Node<TK>(M);
-     for (int i = curr->count+1; i < curr->count; i++) {
-      parent->keys[i] = curr->keys[i];
-      parent->count = parent->count + 1;
-     }
-     key = curr->keys[curr->count/2];
-     s.pop();
-     curr = s.top();
+    while (!inserted) {
+        curr->insert(key);
+        if (curr->count < M) {
+            inserted = true;
+        } else {
+            int mid = curr->count / 2;
+            TK middleKey = curr->keys[mid];
+            Node<TK>* newNode = new Node<TK>(M);
+            newNode->leaf = curr->leaf;
+            for (int i = mid + 1, j = 0; i < curr->count; i++, j++) {
+                newNode->keys[j] = curr->keys[i];
+                newNode->count++;
+            }
+            if (!curr->leaf) {
+                for (int i = mid + 1, j = 0; i <= curr->count; i++, j++) {
+                    newNode->children[j] = curr->children[i];
+                }
+            }
+            curr->count = mid;
+            s.pop();
+            if (s.empty()) {
+                Node<TK>* newRoot = new Node<TK>(M);
+                newRoot->keys[0] = middleKey;
+                newRoot->children[0] = curr;
+                newRoot->children[1] = newNode;
+                newRoot->count = 1;
+                newRoot->leaf = false;
+                root = newRoot;
+                inserted = true;
+            } else {
+                Node<TK>* parent = s.top();
+                int i;
+                for (i = parent->count - 1; i >= 0 && parent->keys[i] > middleKey; i--) {
+                    parent->keys[i + 1] = parent->keys[i];
+                    parent->children[i + 2] = parent->children[i + 1];
+                }
+                parent->keys[i + 1] = middleKey;
+                parent->children[i + 2] = newNode;
+                parent->count++;
+                curr = parent;
+                key = middleKey;
+            }
+        }
     }
-   }
-  }
-   //inserta un elemento
+}
   void remove(TK key);//elimina un elemento
   int height();//altura del arbol. Considerar altura 0 para arbol vacio
   string toString(const string& sep);  // recorrido inorder
