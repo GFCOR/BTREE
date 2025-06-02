@@ -101,8 +101,9 @@ class BTree {
   TK minKey();  // minimo valor de la llave en el arbol
   TK maxKey();  // maximo valor de la llave en el arbol
   void clear(); // eliminar todos lo elementos del arbol
-  int size(); // retorna el total de elementos insertados  
-  
+  int size(); // retorna el total de elementos insertados
+  static BTree<int>* build_from_ordered_vector(const vector<int>& vector, int i);
+
   // Construya un árbol B a partir de un vector de elementos ordenados
   static BTree* build_from_ordered_vector(vector<TK> elements);
   // Verifique las propiedades de un árbol B
