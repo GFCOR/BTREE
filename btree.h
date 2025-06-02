@@ -67,10 +67,10 @@ class BTree {
       parent->count = parent->count + 1;
      }
      key = curr->keys[curr->count/2];
+     s.pop();
+     curr = s.top();
     }
    }
-
-
   }
    //inserta un elemento
   void remove(TK key);//elimina un elemento
