@@ -104,8 +104,32 @@ class BTree {
       return ans;
   }
       //altura del arbol. Considerar altura 0 para arbol vacio
-  string toString(const string& sep);  // recorrido inorder
-  vector<TK> rangeSearch(TK begin, TK end);
+  string toString(Node<TK>* nodo, string& sep) {
+          int i = 0;
+          for (; i < nodo->count; i++) {
+              if (!nodo->leaf) toString(nodo->children[i], sep);
+              sep += std::to_string(nodo->keys[i]) + ",";
+          }
+          if (!nodo->leaf) toString(nodo->children[i], sep);
+      return sep;
+  }
+      // recorrido inorder
+    vector<TK> rangeSearch(TK begin, TK end){
+      vector<int> result;
+      Node<TK>* node = root;
+      for (int i = 0; i < node->count; i++) {
+          if (!node->leaf && node->keys[i] > begin) {
+              rangeSearch(node->children[i]);
+          }
+          if (node->keys[i] >= begin && node->keys[i] <= end) {
+              result.push_back(node->keys[i]);
+          }
+      }
+      if (!node->leaf && node->keys[node->count] < end) {
+          rangeSearch(node->children[node->count]);
+      }
+      return result;
+  }
 
   TK minKey() {
       Node<TK>* curr = root;
@@ -126,14 +150,42 @@ class BTree {
       root->killSelf();
   }
       // eliminar todos lo elementos del arbol
-  int size(); // retorna el total de elementos insertados
+    int size(Node<TK> nodo,int& result){
+      result = 0;
+      int i = 0;
+      for (; i < nodo->count; i++) {
+          if (!nodo->leaf) size(nodo->children[i], result);
+          result += 1;
+      }
+      if (!nodo->leaf) size(nodo->children[i], result);
+      return result;
+  }
   static BTree<int>* build_from_ordered_vector(const vector<int>& vector, int i);
 
   // Construya un árbol B a partir de un vector de elementos ordenados
   static BTree* build_from_ordered_vector(vector<TK> elements);
   // Verifique las propiedades de un árbol B
-  bool check_properties();
-
+    bool check_properties(){
+        int min_keys = (M % 2 == 0) ? (M / 2) : (M / 2);
+        int leaf_level = -1;
+        return check_properties(root, min_keys, 0, leaf_level);
+    }
+    bool check_properties(Node<TK>* node, int min_keys, int level, int& leaf_level)
+    {
+        if (!node) return true;
+        if (node != root && node->count < min_keys) return false;
+        if (node->count > M - 1) return false;
+        if (node->leaf) {
+            if (leaf_level == -1) leaf_level = level;
+            return leaf_level == level;
+        }
+        for (int i = 0; i <= node->count; ++i) {
+            if (!check_properties(node->children[i], min_keys, level + 1,
+            leaf_level))
+                return false;
+        }
+        return true;
+    }
   ~BTree();     // liberar memoria
 };
 
